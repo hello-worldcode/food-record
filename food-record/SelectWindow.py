@@ -1,7 +1,9 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
 from PyQt5.QtCore import pyqtSignal, QTimer
-from RouletteWidget import RouletteWidget
+from PyQt5.QtGui import QPixmap, QPalette, QBrush#用来显示窗口背景
+from RandomSelectWindow import RouletteWidget
+from PyQt5.QtCore import Qt
 
 class SelectWindow(QWidget):
     return_to_main_signal = pyqtSignal()
@@ -12,10 +14,17 @@ class SelectWindow(QWidget):
         self.setGeometry(720, 300, 500, 500)
 
         layout = QVBoxLayout(self)
+        background_image = QPixmap('background.jpg')
+        backgroud_brush = QBrush(background_image)
+        palette = self.palette()
+        palette.setBrush(QPalette.Background, backgroud_brush)
+        self.setPalette(palette)
+
 
         back_button = QPushButton('返回', self)
+        back_button.setStyleSheet("QPushButton { font-weight: bold; font-size: 16px; padding: 5px; }")  # 设置按钮样式
+        layout.addWidget(back_button, alignment=Qt.AlignTop | Qt.AlignLeft)
         back_button.clicked.connect(self.return_to_main_signal.emit)
-        layout.addWidget(back_button)
 
         button = QPushButton('选择', self)
         button.clicked.connect(self.show_roulette)  # 连接到打开转盘界面的槽函数

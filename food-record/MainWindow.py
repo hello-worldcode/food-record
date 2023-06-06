@@ -5,6 +5,7 @@ from PyQt5.QtCore import pyqtSignal
 from SelectWindow import SelectWindow
 from RecordWindow import RecordWindow
 
+
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -22,17 +23,17 @@ class MainWindow(QWidget):
         layout.addWidget(self.label)
 
         self.button = QPushButton('记录功能', self)
-        self.button.setStyleSheet("background-color: white; color: black;")
         self.button.clicked.connect(self.show_record_page)
         layout.addWidget(self.button)
 
         self.button1 = QPushButton('选择功能', self)
-        self.button1.setStyleSheet("background-color: white; color: black;")
         self.button1.clicked.connect(self.show_select_page)
         layout.addWidget(self.button1)
 
+
         self.record_window = None
         self.select_window = None
+        self.expense_records=None
 
     def show_record_page(self):
         self.hide()  # 隐藏主界面
@@ -46,6 +47,8 @@ class MainWindow(QWidget):
         self.select_window.return_to_main_signal.connect(self.return_to_main)
         self.select_window.show()
 
+
+
     def return_to_main(self):
         if self.record_window and self.record_window.isVisible():
             self.record_window.hide()  # 隐藏记录界面
@@ -54,7 +57,11 @@ class MainWindow(QWidget):
         self.show()  # 显示主界面
 
 
-
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    win = MainWindow()
+    win.show()
+    sys.exit(app.exec())
 
 
 
