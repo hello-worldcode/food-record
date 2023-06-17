@@ -1,16 +1,15 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QVBoxLayout
 import mysql.connector
 import random
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap, QPalette, QBrush
 
-class RouletteWidget(QMainWindow):
+class WinSelect(QWidget):
     return_to_main_signal = pyqtSignal()
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Roulette Widget")
         self.setGeometry(720, 300, 500, 500)
 
         background_image = QPixmap('background.jpg')
@@ -19,19 +18,20 @@ class RouletteWidget(QMainWindow):
         palette.setBrush(QPalette.Background, backgroud_brush)
         self.setPalette(palette)
 
+        layout = QVBoxLayout(self)
 
-        self.back_button = QPushButton('返回', self)
-        self.back_button.setStyleSheet("QPushButton { font-weight: bold; font-size: 16px; padding: 5px; }")
-        self.back_button.clicked.connect(self.return_to_main_signal.emit)
+        back_button = QPushButton('返回', self)
+        back_button.setStyleSheet("QPushButton { font-weight: bold; font-size: 16px; padding: 5px; }")
+        layout.addWidget(back_button, alignment=Qt.AlignTop | Qt.AlignLeft)
+        back_button.clicked.connect(self.return_to_main_signal.emit)
 
-        self.recommend_button = QPushButton("随机推荐", self)
-        self.recommend_button.setGeometry(28, 460, 440, 30)
-        self.recommend_button.clicked.connect(self.random_recommendation)
+        add_button = QPushButton('窗口推荐', self)
+        add_button.clicked.connect(self.recommend_window)
+        layout.addWidget(add_button)
 
         self.recommendation_label = QLabel(self)
         self.recommendation_label.setGeometry(50, 100, 300, 30)
         self.recommendation_label.setStyleSheet("QLabel { color: white; font-size: 16px; }")  # 设置文本颜色为白色和字体大小
-        #self.recommendation_label.setAlignment(Qt.AlignCenter)
 
         # 创建数据库连接
         self.cnx = mysql.connector.connect(
@@ -42,10 +42,10 @@ class RouletteWidget(QMainWindow):
             raise_on_warnings=True
         )
 
-    def random_recommendation(self):
+    def recommend_window(self):
         try:
             cursor = self.cnx.cursor()
-            query = "SELECT meal_type FROM dining_info"
+            query = "SELECT window_info FROM dining_info"
             cursor.execute(query)
             window_info_list = cursor.fetchall()
             cursor.close()
@@ -62,6 +62,6 @@ class RouletteWidget(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    roulette_widget = RouletteWidget()
+    roulette_widget = WinSelect()
     roulette_widget.show()
     sys.exit(app.exec_())

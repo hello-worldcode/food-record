@@ -6,7 +6,7 @@ from pyecharts import options as opts
 from pyecharts.charts import Line, Pie, Bar
 from pyecharts.globals import ThemeType
 import mysql.connector
-
+import datetime
 
 class ExpenseWindow(QWidget):
     return_to_main_signal = pyqtSignal()
@@ -42,10 +42,11 @@ class ExpenseWindow(QWidget):
         self.display_window_visit_ratio()
         self.display_window_queue_times()
 
+
     def display_expense_records(self):
         try:
             cursor = self.cnx.cursor()
-            query = "SELECT dining_date, SUM(price) FROM dining_info GROUP BY dining_date"
+            query = "SELECT dining_date, SUM(price) FROM dining_info GROUP BY dining_date ORDER BY dining_date"
             cursor.execute(query)
             records = cursor.fetchall()
             cursor.close()
@@ -62,7 +63,10 @@ class ExpenseWindow(QWidget):
                     Line(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))
                     .add_xaxis(dates)
                     .add_yaxis("每天消费总额", prices)
-                    .set_global_opts(title_opts=opts.TitleOpts(title="每天消费总额折线图"))
+                    .set_global_opts(
+                        title_opts=opts.TitleOpts(title="每日消费金额记录"),
+                        datazoom_opts=[opts.DataZoomOpts()],
+                    )
                     .render("每日消费金额记录.html")
                 )
 
@@ -96,6 +100,10 @@ class ExpenseWindow(QWidget):
                     Pie(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))
                     .add("", [list(z) for z in zip(window_labels, visit_counts)])
                     .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+                    .set_global_opts(
+                        title_opts=opts.TitleOpts(title="窗口访问次数比例"),  # 设置饼图标题
+                        legend_opts=opts.LegendOpts(orient="vertical", pos_top="middle", pos_right="0%"),  # 设置图例的方向和位置
+                    )
                     .render("窗口访问次数比例.html")
                 )
 
